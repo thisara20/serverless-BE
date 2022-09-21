@@ -6,8 +6,11 @@ module.exports.signup = (event) => {
     event,
     message: 'Your function executed successfully!',
        
-     
   };
+  return {
+    "statusCode": 200,
+    'headers': {},
+    "body": json.dumps(response ) };
   
 };
 
