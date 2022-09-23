@@ -1,8 +1,25 @@
 const mysql = require('mysql2');
 const connection = require("./../../db")
 
-
 const DataHandler = {
+  read: async (event, context, callback) => {
+
+    connection.query("SELECT * FROM user" ,function(err,results){
+      if(err) throw err;
+   
+      resolve(results);
+    });
+    
+    const response = {
+      const: result = await DataHandler,
+      statusCode: 200,
+      body: JSON.stringify({results:result}),
+    };
+    callback(null, response);
+  }
+}
+     /* 
+     const DataHandler = {
   read: async (event, context, callback) => {
 
     var query = "SELECT * FROM user"
@@ -26,7 +43,7 @@ const DataHandler = {
     callback(null, response);
   }
 }
-
+ */
 
 const userHandler = {
   signup: (event, context, callback) => {
