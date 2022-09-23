@@ -1,4 +1,3 @@
-const express = require("express");
 const mysql = require('mysql2'); 
 require("dotenv").config(); 
  
@@ -44,4 +43,4 @@ connection.execute(sql, function(err,result){
 
 */
 
-module.exports ={connection};
+module.exports =connection;
