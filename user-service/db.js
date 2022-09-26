@@ -1,3 +1,46 @@
+
+const mysql = require('mysql2'); 
+require("dotenv").config(); 
+ 
+
+const pool = mysql.createPool({
+    host:process.env.DB_HOST, 
+    user:process.env.DB_USER,
+    database:process.env.DB_NAME,
+    password:process.env.DB_PASSWORD,
+    waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
+});
+ 
+ 
+/*
+let sql= "SELECT * FROM user;";
+
+connection.execute(sql, function(err,result){
+  if(err) throw new Error;
+  console.log(result);
+})
+ 
+insert 
+
+let sql= `INSERT INTO user (email, name, password) VALUES  ('abqqc', ' aqbc', ' aqbc')`
+connection.execute(sql, function(err,result){
+  if(err) console.log(err);
+  console.log(result);
+})
+
+ 
+let sql= `SELECT * FROM user where email='abc' and password='abc' `;
+connection.execute(sql, function(err,result){
+  if(err) console.log(err);
+  console.log(result);
+})
+
+*/
+ 
+module.exports=pool;
+=======
 const mysql = require('mysql2'); 
 require("dotenv").config(); 
  
