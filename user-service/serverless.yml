@@ -26,6 +26,14 @@ functions:
           cors: true
           method: get
           path: user/read
+  login:
+    handler: routes.login
+    description: Login to your account.
+    events:
+      - http: 
+          cors: true
+          method: post
+          path: user/login
            
 plugins:
   - serverless-plugin-common-excludes
