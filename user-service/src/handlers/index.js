@@ -1,4 +1,4 @@
 //import userHandler from './userHandler';
-const {userHandler} = require('./userHandler');
+import {userHandler} from'./userHandler' ;
 
-module.exports = {userHandler};
+export  {userHandler};

@@ -26,6 +26,31 @@ functions:
           cors: true
           method: get
           path: user/read
-           
+  login:
+    handler: routes.login
+    description: Login to your account.
+    events:
+      - http: 
+          cors: true
+          method: post
+          path: user/login
+
+custom:
+  webpack:
+    webpackConfig: 'webpack.config.js'
+    includeModules: false
+    packager: 'npm'
+  prune:
+    automatic: true
+    number: 3
+  apiGatewayThrottling:
+    maxRequestsPerSecond: 3000
+    maxConcurrentRequests: 2000
+  warningThreshold: 100
+
 plugins:
+  - serverless-webpack
+  - serverless-prune-plugin
+  - serverless-api-gateway-throttling
+  - serverless-cloudformation-resource-counter     
   - serverless-plugin-common-excludes
