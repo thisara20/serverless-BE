@@ -25,4 +25,3 @@ const { DataHandler } = require('./src/handlers/userHandler');
  read = (event,context,callback) => DataHandler.read(event,context,callback );
 
 module.exports ={signup,read};
- 
