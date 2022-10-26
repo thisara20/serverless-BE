@@ -1,169 +1,42 @@
- 
 //const bcrypt = require('bcrypt');
-import {userModel} from "../models";
-import bcrypt from "bcryptjs" ;
+import { userModel } from "../models";
+import bcrypt from "bcryptjs";
 const jwt = require("jsonwebtoken");
 
- 
-
-const mysql = require("mysql2");
-const pool = require("./../../db");
-const bcrypt = require('bcrypt');
- 
-const DataHandler = {
-  read: (event, context, callback) => {
-    const query = "SELECT * FROM user";
-
-    pool.execute(query, (error, results) => {
-      if (error) {
-        throw error;
-      }
-      console.log(results);
-      callback(null, results);
-     // pool.releaseConnection();
-    });
-    
-  },
-};
-
 const userHandler = {
-  signup: (req, callback) => {
-    
-    var email= req.body.email; 
-    var name= req.body.name;
-    var password =req.body.password;
-
-    //const query = 'INSERT INTO user (email, name, password) VALUES ('?', ' ?', ' ?')', [email, name,password];
-    
-    pool.query('INSERT INTO user (email, name, password) VALUES ? ? ?', [email, name,password], (error) => {
-      if (error) {
-        throw error;
-      }
-       
-      callback(null, "Inserted successfully");
-      //pool.releaseConnection();
-    });
-  },
-};
-
-const LoginHandler = {
-  login: (req, callback) => {
-    
-    var email= req.body.email;
-    var password =req.body.password;
-    //const query = 'SELECT * FROM user WHERE email=? AND password=? ', [email, password];
-    
-    pool.query('SELECT * FROM user WHERE email=? AND password=? ', [email, password], (error) => {
-      if (error) {
-        throw error;
-      }
-       
-      callback(null, "logged successfully");
-    });
-    /*const result = await DataHandler;
-
-const mysql = require('mysql2');
-const connection = require("./../../db")
-
-const DataHandler = {
-  read: async (event, context, callback) => {
-
-    connection.query("SELECT * FROM user" ,function(err,results){
-      if(err) throw err;
-   
-      resolve(results);
-    });
-    
-    const response = {
-      const: result = await DataHandler,
-      statusCode: 200,
-      body: JSON.stringify({results:result}),
-    };
-    callback(null, response);
-  }
-}
-     /* 
-     const DataHandler = {
-  read: async (event, context, callback) => {
-
-    var query = "SELECT * FROM user"
-
-    connection.query(query, (error, results) => {
-      if (error) {
-        throw new error
-      }
-      console.log(results);
-
-    })
-    const result = await DataHandler;
-
-
-    const response = {
-
-      statusCode: 200,
-      body: JSON.stringify({ results: result }),
-
-    };
-    callback(null, response);
-     */
-  },
-};
-
-/*
-const DataHandler = {
-  read: async (event, context, callback) => {
-
-    connection.query("SELECT * FROM user" ,function(err,results){
-      if(err) throw err;
-   
-      resolve(results);
-    });
-      
-    
-    const response = {
-      const: result = await DataHandler,
-      statusCode: 200,
-      body: JSON.stringify({results:result}),
- 
-    };
-    callback(null, response);
-  }
-}
-
-      
-------signup--
- 
- 
-const userHandler = {
-  
   signup: async (event, context, callback) => {
-    event.body = JSON.parse(event.body)
-    console.log("event",event.body)
-    console.log("event2", event.body.email)
-    
+    event.body = JSON.parse(event.body);
+    console.log("event", event.body);
+    console.log("event2", event.body.email);
+
     const email = event.body.email;
     const name = event.body.name;
     const password = event.body.password;
 
-    const results =await userModel.isExistingUser(email);
-    console.log("ss",results);
-     
-    if(results == 0){
+    const results = await userModel.isExistingUser(email);
+    console.log("ss", results);
+
+    if (results == 0) {
       const hash = await bcrypt.hash(password, 10);
-     
-      const signupQuery = await userModel.signup(email,name,hash);
-      
-      if(signupQuery){
+
+      const signupQuery = await userModel.signup(email, name, hash);
+
+      if (signupQuery) {
         var response = {
           statusCode: 200,
           body: JSON.stringify("User added successfully!"),
           headers: {
             "Access-Control-Allow-Origin": "*",
             "Content-Type": "application/json",
+            "X-XSS-Protection": "1; mode=block",
+            "X-Content-Type-Options": "nosniff",
+            "Cache-Control": "no-store, no-cache",
+            "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+            "Content-Security-Policy": "default-src 'none'",
           },
         };
         return response;
-      }else{
+      } else {
         var response = {
           statusCode: 400,
           body: JSON.stringify("Error while registering!"),
@@ -174,7 +47,7 @@ const userHandler = {
         };
         return response;
       }
-    }else{
+    } else {
       var response = {
         statusCode: 400,
         body: JSON.stringify("Email already exists"),
@@ -185,96 +58,88 @@ const userHandler = {
       };
       return response;
     }
-
-     
-    
-    
   },
- 
-  read:async(event, context, callback) => {
+
+  read: async (event, context, callback) => {
     const authHeader = event.headers.Authorization;
-    console.log("authH",authHeader);
+    console.log("authH", authHeader);
     const key = process.env.SECURITY_KEY;
     const token = await authHeader.split(" ")[1];
-    
-     const decoded = jwt.verify(token, key);
-     if(decoded){
-      const results =await userModel.read();
-      if(results.length>0){
+
+    const decoded = jwt.verify(token, key);
+    if (decoded) {
+      const results = await userModel.read();
+      if (results.length > 0) {
         var response = {
           statusCode: 200,
-          body: JSON.stringify({data:results}),
+          body: JSON.stringify({ data: results }),
           headers: {
             "Access-Control-Allow-Origin": "*",
             "Content-Type": "application/json",
           },
         };
-        return response; 
-      }else { var response = {
-        statusCode: 400,
-        body: JSON.stringify("error occured"),
+        return response;
+      } else {
+        var response = {
+          statusCode: 400,
+          body: JSON.stringify("error occured"),
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json",
+          },
+        };
+      }
+    } else {
+      var response = {
+        statusCode: 401,
+        body: JSON.stringify("verify token"),
         headers: {
           "Access-Control-Allow-Origin": "*",
           "Content-Type": "application/json",
         },
       };
-     }
-     }else { var response = {
-      statusCode: 401,
-      body: JSON.stringify("verify token"),
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Content-Type": "application/json",
-      },
-    };
-   }
-      
-     
-         
+    }
   },
 
   login: async (event, context, callback) => {
-    event.body = JSON.parse(event.body)
-    
+    event.body = JSON.parse(event.body);
+
     const email = event.body.email;
     const password = event.body.password;
-   const key =process.env.SECURITY_KEY;
+    const key = process.env.SECURITY_KEY;
 
-  const [results] =await userModel.isExistingUser(email);
- 
-  if(results.length>0){
-    const hash= results[0].password;
-    const validate = await bcrypt.compare(password, hash);
-   
-    if(validate){
-      const token = jwt.sign({email: email,},key, { expiresIn: "1h"});
-      console.log("token",token);
-      var response = {
-        statusCode: 200,   
-        body: JSON.stringify({token:token ,message:"signed in success"} ),
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Content-Type": "application/json",
-        },
-      };
-      return response;
-    }else{
-      var response = {
-        statusCode: 400,
-        body: JSON.stringify("Login failed"),
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Content-Type": "application/json",
-        },
-      };
-      return response;
+    const [results] = await userModel.isExistingUser(email);
+
+    if (results.length > 0) {
+      const hash = results[0].password;
+      const validate = await bcrypt.compare(password, hash);
+
+      if (validate) {
+        const token = jwt.sign({ email: email }, key, { expiresIn: "1h" });
+        console.log("token", token);
+        var response = {
+          statusCode: 200,
+          body: JSON.stringify({ token: token, message: "signed in success" }),
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json",
+          },
+        };
+        return response;
+      } else {
+        var response = {
+          statusCode: 400,
+          body: JSON.stringify("Login failed"),
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json",
+          },
+        };
+        return response;
+      }
     }
-    
-  }
-     
-    
   },
-   /*
+  /*
   verifyToken: async (event, context, callback) => {
     const authHeader = req.body.headers.Authorization;
     console.log("authH",authHeader)
@@ -299,13 +164,10 @@ const userHandler = {
       return response;
     }
 }
- 
 
      */
- 
-   
-  
-/*
+
+  /*
   login: (req, callback) => {
     var email = req.body.email;
     var password = req.body.password;
@@ -325,12 +187,6 @@ const userHandler = {
     
   },
   */
- 
+};
 
-
- 
- export { userHandler };
- 
-  
- 
-//export default userHandler; 
+export { userHandler };
